@@ -1,0 +1,41 @@
+Sequence: a puzzle game where the aim is to correctly position a line across
+the screen.
+
+This was made for Pirate Kart V in February 2012.
+
+    DEPENDENCIES
+
+Python (2.6 or later 2.x)
+Pygame (1.8 or later, probably; tested with 1.9.1)
+
+    RUNNING
+
+./configure
+./run
+
+    PLAYING
+
+Use the mouse or the arrow keys to move and rotate the line by clicking and
+dragging so that all of the red lines around the border will cross your line
+when extended.  Press space to start things moving along the red lines to find
+out if you've solved the puzzle.
+
+If a red line has a blue circle at the end, the darker arc of this indicates
+the angle it will turn through when any other of the moving things crosses your
+line.
+
+    CONTROLS
+
+left-click drag, arrow keys: move the line.
+right-click drag, ctrl+left/right: rotate the line (left anticlockwise, right
+                                   clockwise).
+space, enter: run the puzzle.
+escape, backspace: cancel running the puzzle.
+tab, ctrl: hold to increase the speed when the puzzle is running.
+
+To quit, close the window.
+
+    LICENSING
+
+Source code is available under the new BSD license (included).  External
+modules (in sequence/ext/) are available under the GPL, version 3.
