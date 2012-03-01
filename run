@@ -14,7 +14,7 @@ from sequence.ext.fonthandler import Fonts
 
 pygame.mixer.pre_init(buffer = 1024)
 pygame.init()
-from sequence.level import Level
+from sequence.level import Title
 from sequence import conf
 
 ir = lambda x: int(round(x))
@@ -380,6 +380,6 @@ if __name__ == '__main__':
     restarting = True
     while restarting:
         restarting = False
-        Game(Level).run()
+        Game(Title).run()
 
 pygame.quit()

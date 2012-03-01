@@ -10,7 +10,7 @@ MUSIC_DIR = DATA_DIR + 'music' + sep
 FONT_DIR = DATA_DIR + 'font' + sep
 
 # display
-WINDOW_ICON = None #IMG_DIR + 'icon.png'
+WINDOW_ICON = IMG_DIR + 'icon.png'
 WINDOW_TITLE = 'Sequence'
 MOUSE_VISIBLE = True
 FLAGS = 0
@@ -52,7 +52,8 @@ INITIAL_LINE = ((480, 270), 0) # (point, angle)
 OBJS = [
     [((270, 0), -.3, 0)],
     [((0, 150), .4, 0), ((960, 390), -.6, 0), ((300, 540), .65, 0)],
-    [((200, 540), .5, -.5), ((400, 540), .4, -.5)]
+    [((200, 540), .5, -.5), ((400, 540), .4, -.5)],
+    [((100, 0), -.5, 0), ((200, 0), -.3, 0), ((300, 0), -.1, 0), ((800, 540), .1, -.5)]
 ]
 
 # gameplay
@@ -70,3 +71,16 @@ ARROW_SIZE = 50
 ARC_RADIUS = 20
 OBJ_COLOUR = (0, 0, 200)
 OBJ_RADIUS = 5
+
+# title screen
+TITLE_TEXT = '''Use the mouse to move and rotate the line so that all of the \
+red lines around the border will cross your line when extended.
+
+Press space  to start things moving along the red lines to find out if you've \
+solved the puzzle.
+
+Press space to begin.'''
+FONT = 'Jura-Light.ttf'
+FONT_SIZE = .09 # proportion of screen height
+FONT_COLOUR = (0, 0, 0)
+TITLE_PADDING = .05 # proportion of screen height
