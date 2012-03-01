@@ -261,6 +261,12 @@ class Level:
                     angles = (angle, angle + turn)
                     pg.draw.arc(screen, conf.ARC_BG_COLOUR, rect, max(angles), min(angles))
                     pg.draw.arc(screen, conf.ARC_COLOUR, rect, min(angles), max(angles))
+                    # lines to mark arc
+                    for a in angles:
+                        a %= 2 * pi
+                        x = end[0] + r * get_dx(a)
+                        y = end[1] + r * get_dy(a)
+                        pg.draw.aaline(screen, conf.ARC_COLOUR, end, (x, y))
         return True
 
 class Title:
