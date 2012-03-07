@@ -1,4 +1,4 @@
-from math import tan, atan, cos, sin, pi
+from math import cos, sin, pi, acos
 
 import pygame as pg
 from ext import evthandler as eh
@@ -58,14 +58,14 @@ class Level:
             c = y - m * x
         return m, c
 
-    def update_line_pts (self):
+    def _get_line_ends (self):
         m, c = self.eqn()
         # get border intercepts
         w, h = self.game.res
         if m is None:
             # vertical
             x = self.pos[0]
-            self.pts = [(x, 0), (x, h)]
+            pts = [(x, 0), (x, h)]
         else:
             pts = []
             for x in (0, w):
@@ -80,26 +80,63 @@ class Level:
                 else:
                     if 0 <= x <= w:
                         pts.append((x, y))
-            self.pts = pts[:2]
+            pts = pts[:2]
+        return pts
+
+    def _get_line_centre (self):
+        (x1, y1), (x2, y2) = self._get_line_ends()
+        return ((x1 + x2) / 2, (y1 + y2) / 2)
+
+    def update_line_pts (self):
+        self.pts = self._get_line_ends()
         self.dirty = True
 
     def click (self, evt):
         if evt.button == conf.MB_MOVE:
+            # start moving
             self.moving = True
+            # stop rotating
+            if self.rotating:
+                self.rotating = None
         elif evt.button == conf.MB_ROTATE:
+            # start rotating
             self.rotating = True
+            if self.moving:
+                self.pos = list(self._get_line_centre())
+                # stop moving
+                self.moving = None
 
     def unclick (self, evt):
         if evt.button == conf.MB_MOVE:
             self.moving = False
+            self.pos = list(self._get_line_centre())
+            # if stopped rotating because started moving, start rotating again
+            if self.rotating is None:
+                self.rotating = True
         elif evt.button == conf.MB_ROTATE:
             self.rotating = False
+            # if stopped moving because started rotating, start moving again
+            if self.moving is None:
+                self.moving = True
 
     def drag (self, evt):
         if self.moving:
             self.move(evt.rel)
         if self.rotating:
-            self.rotate(evt.rel[0])
+            x, y = self.pos
+            x2, y2 = pg.mouse.get_pos()
+            dx, dy = evt.rel
+            x1, y1 = x2 - dx, y2 - dy
+            a_x, a_y, b_x, b_y = x1 - x, y1 - y, x2 - x, y2 - y
+            a_len = (a_x ** 2 + a_y ** 2) ** .5
+            b_len = (b_x ** 2 + b_y ** 2) ** .5
+            if a_len != 0 and b_len != 0: # else at the centre (don't rotate)
+                angle = acos((a_x * b_x + a_y * b_y) / (a_len * b_len))
+                # get line from (x, y) to centre of mouse movement's line
+                c_x, c_y = ((x1 + x2) / 2 - x, (y1 + y2) / 2 - y)
+                # sign of cross product with (dx, dy) gives rotation direction
+                sign = 1 if dx * c_y - dy * c_x > 0 else -1
+                self.rotate(sign * angle)
 
     def move_kb (self, key, evt, mods):
         d = conf.KEYS_MOVE.index(key)
@@ -109,7 +146,7 @@ class Level:
 
     def rotate_kb (self, key, evt, mods):
         d = conf.KEYS_ROTATE.index(key) or -1
-        self.rotate(conf.KEY_MOVE_SPEED * d)
+        self.rotate(-conf.KEY_ROTATE_SPEED * d)
 
     def move (self, amount):
         if not self.running:
@@ -119,7 +156,7 @@ class Level:
 
     def rotate (self, amount):
         if not self.running:
-            self.angle -= conf.ROTATE_SPEED * amount
+            self.angle += amount / pi
             self.update_line_pts()
 
     def obj_info (self, m_l, c_l, o):
@@ -268,41 +305,3 @@ class Level:
                         y = end[1] + r * get_dy(a)
                         pg.draw.aaline(screen, conf.ARC_COLOUR, end, (x, y))
         return True
-
-class Title:
-    def __init__ (self, game, event_handler, ID = 0):
-        self.game = game
-        self.event_handler = event_handler
-        self.level_ID = ID
-        self.frame = conf.FRAME
-        event_handler.add_event_handlers({
-            pg.MOUSEBUTTONDOWN: self.start
-        })
-        event_handler.add_key_handlers([
-            (conf.KEYS_NEXT, self.start, eh.MODE_ONDOWN),
-            (conf.KEYS_BACK, lambda *args: self.game.quit(), eh.MODE_ONDOWN)
-        ])
-
-    def start (self, *args):
-        self.game.start_backend(Level, self.level_ID)
-
-    def update (self):
-        pass
-
-    def draw (self, screen):
-        if self.dirty:
-            # BG
-            screen.fill(conf.BG)
-            # text
-            w, h = self.game.res
-            x = conf.TITLE_PADDING * w
-            y = conf.TITLE_PADDING * h
-            w -= 2 * x
-            font = (conf.FONT, conf.FONT_SIZE * h, False)
-            font_args = (font, conf.TITLE_TEXT, conf.FONT_COLOUR, None, w)
-            sfc = self.game.img(font_args)[0]
-            screen.blit(sfc, (x, y))
-            self.dirty = False 
-            return True
-        else:
-            return False

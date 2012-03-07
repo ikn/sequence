@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python2
 
 import os
 from time import time
@@ -14,7 +14,7 @@ from sequence.ext.fonthandler import Fonts
 
 pygame.mixer.pre_init(buffer = 1024)
 pygame.init()
-from sequence.level import Title
+from sequence.title import Title
 from sequence import conf
 
 ir = lambda x: int(round(x))
